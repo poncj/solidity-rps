@@ -156,7 +156,7 @@ async function getHistory(contractData, last_block) {
     let filterFrom = contractData.contract.filters.GamePlayed(contractData.signer.address);
     
     if (last_block == 0) {
-        historyData = await contractData.contract.queryFilter(filterFrom, -5000);
+        historyData = await contractData.contract.queryFilter(filterFrom, -500);
     } else {
         historyData = await contractData.contract.queryFilter(filterFrom, last_block);
     }
