@@ -154,7 +154,7 @@ async function run() {
             }
         });
     } catch (err) {
-        $('#token_log_message').text('ERROR! Check console for details');
+        $('#log_message').text('ERROR! Check console for details');
         console.log(err);
         return false;
     }
