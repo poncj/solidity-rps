@@ -10,147 +10,154 @@ let appState = {
 
 async function run() {
     
-    const contractData = await getContractData();
-    const contract = new ModelContract(contractData);
+    try {
+        
+        const contractData = await getContractData();
+        const contract = new ModelContract(contractData);
 
-    appState.loading = true;
+        appState.loading = true;
 
-    let minBet = await contract.getMinBet();
-    
-    let contractAmount = await contractData.provider.getBalance(contractData.contract.address);
-    let signerAmount = await contractData.provider.getBalance(contractData.signer.address);
+        let minBet = await contract.getMinBet();
 
-    $("#contract_amount").text(`${ethers.utils.formatEther(contractAmount)} TBNB`);
-    $("#address_amount").text(`${ethers.utils.formatEther(signerAmount)} TBNB`);
-    $("#minBet").text(`${ethers.utils.formatEther(minBet)} TBNB`);
-    
-   
-    appState.last_block = await getHistory(contractData, appState.last_block);
-    
-    appState.loading = false;
+        let contractAmount = await contractData.provider.getBalance(contractData.contract.address);
+        let signerAmount = await contractData.provider.getBalance(contractData.signer.address);
 
-    $('.choice').on('click', async function() {
+        $("#contract_amount").text(`${ethers.utils.formatEther(contractAmount)} TBNB`);
+        $("#address_amount").text(`${ethers.utils.formatEther(signerAmount)} TBNB`);
+        $("#minBet").text(`${ethers.utils.formatEther(minBet)} TBNB`);
 
-        try {
 
-            $("#log_message").text("Loading...");
+        appState.last_block = await getHistory(contractData, appState.last_block);
 
-            $('#log_amount').removeClass();
-            $('#log_amount').addClass('bg-opacity-25 card-footer text-body-secondary');
-            $('#log_amount').text(`--`);
+        appState.loading = false;
 
-            if (appState.loading) {
-                $("#log_message").text("Wait! Loading...");
-                return false;
-            }
-            
-            appState.loading = true;
+        $('.choice').on('click', async function() {
 
-            let inputValue = $('#bet_amount').val().trim();
-            
-            if (inputValue == "") {
-                $("#log_message").text("Error! Bet is too small");
-                appState.loading = false;
-                return false;
-            }
+            try {
 
-            const _inputValue = parseFloat(inputValue);
+                $("#log_message").text("Loading...");
 
-            if (isNaN(_inputValue)) {
-                $("#log_message").text("Error! Bet is not a number");
-                appState.loading = false;
-                return false;
-            }
-            
-            signerAmount = await contractData.provider.getBalance(contractData.signer.address);
-            contractAmount = await contractData.provider.getBalance(contractData.contract.address);
-            
-            const _signerAmount = parseFloat(ethers.utils.formatEther(signerAmount));
-            const _contractAmount = parseFloat(ethers.utils.formatEther(contractAmount));
+                $('#log_amount').removeClass();
+                $('#log_amount').addClass('bg-opacity-25 card-footer text-body-secondary');
+                $('#log_amount').text(`--`);
 
-            const _minBet = parseFloat(ethers.utils.formatEther(minBet));
+                if (appState.loading) {
+                    $("#log_message").text("Wait! Loading...");
+                    return false;
+                }
 
-            if (_inputValue < _minBet) {
-                $("#log_message").text("Error! Bet is too small");
-                appState.loading = false;
-                return false;
-            }
+                appState.loading = true;
 
-            if (_inputValue > _signerAmount) {
-                $("#log_message").text("Error! Your balance is too low");
-                appState.loading = false;
-                return false;
-            }            
+                let inputValue = $('#bet_amount').val().trim();
 
-            if (_inputValue > _contractAmount) {
-                $("#log_message").text("Error! Contract balance is too low");
-                appState.loading = false;
-                return false;
-            }
-            
-            const choice = $(this).attr('id');
+                if (inputValue == "") {
+                    $("#log_message").text("Error! Bet is too small");
+                    appState.loading = false;
+                    return false;
+                }
 
-            if (choice == 'rock') {
+                const _inputValue = parseFloat(inputValue);
 
-                let response = await contract.Rock(inputValue);
-                let result = await response.wait();
-                let [GamePlayed] = result.events;
+                if (isNaN(_inputValue)) {
+                    $("#log_message").text("Error! Bet is not a number");
+                    appState.loading = false;
+                    return false;
+                }
 
-                contractAmount = await contractData.provider.getBalance(contractData.contract.address);
                 signerAmount = await contractData.provider.getBalance(contractData.signer.address);
-
-                $("#contract_amount").text(`${ethers.utils.formatEther(contractAmount)} TBNB`);
-                $("#address_amount").text(`${ethers.utils.formatEther(signerAmount)} TBNB`);
-                $("#log_message").text(GamePlayed.args[2]);
-
-                printGameResult(GamePlayed.args);
-
-                appState.last_block = await getHistory(contractData, appState.last_block);
-                appState.loading = false;
-            } else if (choice == 'paper') {
-
-                let response = await contract.Paper(inputValue);
-                let result = await response.wait();
-                let [GamePlayed] = result.events;
-
                 contractAmount = await contractData.provider.getBalance(contractData.contract.address);
-                signerAmount = await contractData.provider.getBalance(contractData.signer.address);
 
-                $("#contract_amount").text(`${ethers.utils.formatEther(contractAmount)} TBNB`);
-                $("#address_amount").text(`${ethers.utils.formatEther(signerAmount)} TBNB`);
-                $("#log_message").text(GamePlayed.args[2]);
-                
-                printGameResult(GamePlayed.args);
+                const _signerAmount = parseFloat(ethers.utils.formatEther(signerAmount));
+                const _contractAmount = parseFloat(ethers.utils.formatEther(contractAmount));
 
-                appState.last_block = await getHistory(contractData, appState.last_block);
+                const _minBet = parseFloat(ethers.utils.formatEther(minBet));
+
+                if (_inputValue < _minBet) {
+                    $("#log_message").text("Error! Bet is too small");
+                    appState.loading = false;
+                    return false;
+                }
+
+                if (_inputValue > _signerAmount) {
+                    $("#log_message").text("Error! Your balance is too low");
+                    appState.loading = false;
+                    return false;
+                }            
+
+                if (_inputValue > _contractAmount) {
+                    $("#log_message").text("Error! Contract balance is too low");
+                    appState.loading = false;
+                    return false;
+                }
+
+                const choice = $(this).attr('id');
+
+                if (choice == 'rock') {
+
+                    let response = await contract.Rock(inputValue);
+                    let result = await response.wait();
+                    let [GamePlayed] = result.events;
+
+                    contractAmount = await contractData.provider.getBalance(contractData.contract.address);
+                    signerAmount = await contractData.provider.getBalance(contractData.signer.address);
+
+                    $("#contract_amount").text(`${ethers.utils.formatEther(contractAmount)} TBNB`);
+                    $("#address_amount").text(`${ethers.utils.formatEther(signerAmount)} TBNB`);
+                    $("#log_message").text(GamePlayed.args[2]);
+
+                    printGameResult(GamePlayed.args);
+
+                    appState.last_block = await getHistory(contractData, appState.last_block);
+                    appState.loading = false;
+                } else if (choice == 'paper') {
+
+                    let response = await contract.Paper(inputValue);
+                    let result = await response.wait();
+                    let [GamePlayed] = result.events;
+
+                    contractAmount = await contractData.provider.getBalance(contractData.contract.address);
+                    signerAmount = await contractData.provider.getBalance(contractData.signer.address);
+
+                    $("#contract_amount").text(`${ethers.utils.formatEther(contractAmount)} TBNB`);
+                    $("#address_amount").text(`${ethers.utils.formatEther(signerAmount)} TBNB`);
+                    $("#log_message").text(GamePlayed.args[2]);
+
+                    printGameResult(GamePlayed.args);
+
+                    appState.last_block = await getHistory(contractData, appState.last_block);
+                    appState.loading = false;
+                } else if (choice == 'scissors') {
+
+                    let response = await contract.Scissors(inputValue);
+                    let result = await response.wait();
+                    let [GamePlayed] = result.events;
+
+                    contractAmount = await contractData.provider.getBalance(contractData.contract.address);
+                    signerAmount = await contractData.provider.getBalance(contractData.signer.address);
+
+                    $("#contract_amount").text(`${ethers.utils.formatEther(contractAmount)} TBNB`);
+                    $("#address_amount").text(`${ethers.utils.formatEther(signerAmount)} TBNB`);
+                    $("#log_message").text(GamePlayed.args[2]);
+
+                    printGameResult(GamePlayed.args);
+
+                    appState.last_block = await getHistory(contractData, appState.last_block);
+                    appState.loading = false;
+                } else {
+                    appState.loading = false;
+                    throw "Bad option. Refresh page";
+                }
+            } catch(err) {
+                $("#log_message").text('ERROR. Check console for details!');
+                console.log(err);
                 appState.loading = false;
-            } else if (choice == 'scissors') {
-
-                let response = await contract.Scissors(inputValue);
-                let result = await response.wait();
-                let [GamePlayed] = result.events;
-
-                contractAmount = await contractData.provider.getBalance(contractData.contract.address);
-                signerAmount = await contractData.provider.getBalance(contractData.signer.address);
-
-                $("#contract_amount").text(`${ethers.utils.formatEther(contractAmount)} TBNB`);
-                $("#address_amount").text(`${ethers.utils.formatEther(signerAmount)} TBNB`);
-                $("#log_message").text(GamePlayed.args[2]);
-
-                printGameResult(GamePlayed.args);
-                
-                appState.last_block = await getHistory(contractData, appState.last_block);
-                appState.loading = false;
-            } else {
-                appState.loading = false;
-                throw "Bad option. Refresh page";
             }
-        } catch(err) {
-            $("#log_message").text('ERROR. Check console for details!');
-            console.log(err);
-            appState.loading = false;
-        }
-    });
+        });
+    } catch (err) {
+        $('#token_log_message').text('ERROR! Check console for details');
+        console.log(err);
+        return false;
+    }
 }
 
 
