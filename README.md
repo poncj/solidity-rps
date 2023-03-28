@@ -6,7 +6,7 @@ Everything in the /deploy/ folder is intended to be used on local machine.
 
 Everything in the /production/ folder is intended to be uploaded to the hosting.
 
-So for a successful installation, we must first deploy the contracts, and then upload the files from the production folder to the hosting.
+So for a successful installation, we must first deploy the contract, and then upload the files from the production folder to the hosting.
 
 ### How to /deploy/ contract
 
