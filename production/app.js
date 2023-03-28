@@ -3,12 +3,17 @@ import { ModelContract } from './assets/js/contract/modelContract.js';
 import { ethers } from './assets/js/lib/ethers/ethers-5.7.2.esm.min.js';
 import './assets/js/lib/jquery/jquery-3.6.4.min.js';
 
+let appState = {
+    last_block: 0,
+    loading: false
+}
+
 async function run() {
     
     const contractData = await getContractData();
     const contract = new ModelContract(contractData);
 
-    let loading = true;
+    appState.loading = true;
 
     let minBet = await contract.getMinBet();
     
@@ -19,10 +24,10 @@ async function run() {
     $("#address_amount").text(`${ethers.utils.formatEther(signerAmount)} TBNB`);
     $("#minBet").text(`${ethers.utils.formatEther(minBet)} TBNB`);
     
-    let last_block = 0;
-    last_block = await getHistory(contractData, last_block);
+   
+    appState.last_block = await getHistory(contractData, appState.last_block);
     
-    loading = false;
+    appState.loading = false;
 
     $('.choice').on('click', async function() {
 
@@ -34,18 +39,18 @@ async function run() {
             $('#log_amount').addClass('bg-opacity-25 card-footer text-body-secondary');
             $('#log_amount').text(`--`);
 
-            if (loading) {
+            if (appState.loading) {
                 $("#log_message").text("Wait! Loading...");
                 return false;
             }
             
-            loading = true;
+            appState.loading = true;
 
             let inputValue = $('#bet_amount').val().trim();
             
             if (inputValue == "") {
                 $("#log_message").text("Error! Bet is too small");
-                loading = false;
+                appState.loading = false;
                 return false;
             }
 
@@ -53,7 +58,7 @@ async function run() {
 
             if (isNaN(_inputValue)) {
                 $("#log_message").text("Error! Bet is not a number");
-                loading = false;
+                appState.loading = false;
                 return false;
             }
             
@@ -67,19 +72,19 @@ async function run() {
 
             if (_inputValue < _minBet) {
                 $("#log_message").text("Error! Bet is too small");
-                loading = false;
+                appState.loading = false;
                 return false;
             }
 
             if (_inputValue > _signerAmount) {
                 $("#log_message").text("Error! Your balance is too low");
-                loading = false;
+                appState.loading = false;
                 return false;
             }            
 
             if (_inputValue > _contractAmount) {
                 $("#log_message").text("Error! Contract balance is too low");
-                loading = false;
+                appState.loading = false;
                 return false;
             }
             
@@ -100,8 +105,8 @@ async function run() {
 
                 printGameResult(GamePlayed.args);
 
-                last_block = await getHistory(contractData, last_block);
-                loading = false;
+                appState.last_block = await getHistory(contractData, appState.last_block);
+                appState.loading = false;
             } else if (choice == 'paper') {
 
                 let response = await contract.Paper(inputValue);
@@ -117,8 +122,8 @@ async function run() {
                 
                 printGameResult(GamePlayed.args);
 
-                last_block = await getHistory(contractData, last_block);
-                loading = false;
+                appState.last_block = await getHistory(contractData, appState.last_block);
+                appState.loading = false;
             } else if (choice == 'scissors') {
 
                 let response = await contract.Scissors(inputValue);
@@ -134,16 +139,16 @@ async function run() {
 
                 printGameResult(GamePlayed.args);
                 
-                last_block = await getHistory(contractData, last_block);
-                loading = false;
+                appState.last_block = await getHistory(contractData, appState.last_block);
+                appState.loading = false;
             } else {
-                loading = false;
+                appState.loading = false;
                 throw "Bad option. Refresh page";
             }
         } catch(err) {
             $("#log_message").text('ERROR. Check console for details!');
             console.log(err);
-            loading = false;
+            appState.loading = false;
         }
     });
 }
@@ -152,7 +157,7 @@ async function run() {
 // ONLY 5000 BLOCKS ALLOWED
 async function getHistory(contractData, last_block) {
 
-    let historyData;
+    let historyData;   
     let filterFrom = contractData.contract.filters.GamePlayed(contractData.signer.address);
     
     if (last_block == 0) {
@@ -166,15 +171,17 @@ async function getHistory(contractData, last_block) {
     if (historyData.length > 0) {
         return historyData[historyData.length - 1].blockNumber;
     } else {
-        return 0;
+        return last_block;
     }
 }
 
+/*
 async function getHistory2(contractData, last_block) {
     let etherscanProvider = await new ethers.providers.EtherscanProvider();
     let history = await etherscanProvider.getHistory(contractData.signer.address);
     console.log(history);
 }
+*/
 
 function printHistory(historyData, last_block) {
     historyData.forEach(element => {
@@ -238,6 +245,7 @@ $(async function() {
     if (window.ethereum) {
         await run();
         window.ethereum.on('accountsChanged', async function () {
+            appState.last_block = 0;
             $('.choice').off('click');
             $('#history_block_tbody').html('');
             $('#bet_amount').val('');
