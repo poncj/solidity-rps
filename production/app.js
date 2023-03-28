@@ -157,11 +157,11 @@ async function run() {
 // ONLY 5000 BLOCKS ALLOWED
 async function getHistory(contractData, last_block) {
 
-    const blockLimit = 5000;
+    const blockLimit = 4950; // just incase
     const lastBlockInfo = (await contractData.provider.getBlock("latest"));
 
     if ((lastBlockInfo.number - blockLimit) > last_block) {
-        last_block = lastBlockInfo.number - blockLimit + 1; // + 1 just incase
+        last_block = lastBlockInfo.number - blockLimit;
     }
 
     let historyData;   
