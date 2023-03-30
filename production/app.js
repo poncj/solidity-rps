@@ -208,21 +208,21 @@ function printHistory(historyData, last_block) {
             html = `
                 <tr class="table-light">
                     <th scope="row">DRAW</th>
-                    <td>${ethers.utils.formatEther(element.args[3])} TBNT</td>
+                    <td>${ethers.utils.formatEther(element.args[3])} TBNB</td>
                 </tr>
             `;
         } else if (status == 1) { //won
             html = `
                 <tr class="table-success">
                     <th scope="row">WIN</th>
-                    <td>+${ethers.utils.formatEther(element.args[4])} TBNT</td>
+                    <td>+${ethers.utils.formatEther(element.args[4])} TBNB</td>
                 </tr>
             `;
         } else if (status == 2) { // lost
             html = `
                 <tr class="table-danger">
                     <th scope="row">LOSS</th>
-                    <td>-${ethers.utils.formatEther(element.args[3])} TBNT</td>
+                    <td>-${ethers.utils.formatEther(element.args[3])} TBNB</td>
                 </tr>
             `;
         }
