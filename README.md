@@ -18,7 +18,7 @@ So for a successful installation, we must first deploy the contract, and then up
 
 4. Also specify `RPC_URL` in the .env file.
 
-5. Specify REFILL_AMOUNT as 0.001 in the .env file. You can change it. This amount will be transfered to the contract balance.
+5. Specify `REFILL_AMOUNT` as `0.001` in the .env file. You can change it. This amount will be transfered to the contract balance.
 
 6. Open terminal and start to execute commands:
 
