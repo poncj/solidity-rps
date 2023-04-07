@@ -36,6 +36,12 @@ node deploy.js
 
 8. Аfter executing the previous command in the terminal we should see the contract address. You must copy this address and specify it in your .env as `CONTRACT_ADDRESS`.
 
+9. Type next command. It will transfer amount you specified as `REFILL_AMOUNT` to the contract.
+
+```bash
+node refill.js
+```
+
 This is where the deployment of contract ends. Now we need to configure the files of the /production/ folder.
 
 ### How to configure /production/
