@@ -1,6 +1,7 @@
 # Assignment 3 | Rock Paper Scissors
 
 Live demo: https://rps.npiv.ru/
+> Works only on TBNB!
 
 ## How to use
 
