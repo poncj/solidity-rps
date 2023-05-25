@@ -1,5 +1,7 @@
 # Assignment 3 | Rock Paper Scissors
 
+Live demo: https://rps.npiv.ru/
+
 ## How to use
 
 Everything in the `/deploy/` folder is intended to be used on local machine.
